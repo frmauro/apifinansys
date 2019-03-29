@@ -16,16 +16,19 @@ namespace apifinansys.EFContext
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            //This will singularize all table names
-            foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
-            {
-                entityType.Relational().TableName = entityType.DisplayName();
-            }
-        }
-
         public DbSet<Entry> Entries { get; set; }
         public DbSet<Category> Categories { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Entry>().ToTable("Entry");
+            modelBuilder.Entity<Category>().ToTable("Category");
+            ////This will singularize all table names
+            //foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
+            //{
+            //    entityType.Relational().TableName = entityType.DisplayName();
+            //}
+        }
+
     }
 }
