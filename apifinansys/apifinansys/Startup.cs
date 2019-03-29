@@ -20,6 +20,10 @@ namespace apifinansys
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;ConnectRetryCount=0";
+            //services.AddDbContext<FinansysContext>
+            //    (options => options.UseSqlServer(connection));
+
             services.AddDbContext<FinansysContext>(opt =>
                         opt.UseSqlServer(Configuration.GetConnectionString("FinansysContext")));
 
