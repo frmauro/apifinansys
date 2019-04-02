@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using apifinansys.Contracts;
 using apifinansys.EFContext;
 using apifinansys.entities;
 using Microsoft.AspNetCore.Http;
@@ -14,26 +15,28 @@ namespace apifinansys.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly FinansysContext _context;
+        private IRepositoryWrapper _repoWrapper;
 
-        public CategoryController(FinansysContext context)
+        //private readonly FinansysContext _context;
+
+        public CategoryController(IRepositoryWrapper repoWrapper)
         {
-            this._context = context;
+            this._repoWrapper = repoWrapper;
         }
 
         // GET: api/Category
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
+        public ActionResult<IEnumerable<Category>> GetCategories()
         {
-            return await _context.Categories.ToListAsync();
+            return _repoWrapper.CategoryRepository.FindAll().ToList();
         }
 
 
         // GET: api/Category/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(long id)
+        public ActionResult<Category> GetCategory(long id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = _repoWrapper.CategoryRepository.FindByCondition(c => c.Id == id).FirstOrDefault();
 
             if (category == null)
                 return NotFound();
@@ -44,24 +47,21 @@ namespace apifinansys.Controllers
 
         // POST: api/Category
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        public ActionResult<Category> PostCategory(Category category)
         {
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
-
+            _repoWrapper.CategoryRepository.Create(category);
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
         }
 
 
         // PUT: api/Category/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(long id, Category category)
+        public IActionResult PutCategory(long id, Category category)
         {
             if (id != category.Id)
                 return BadRequest();
 
-            _context.Entry(category).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            _repoWrapper.CategoryRepository.Update(category);
 
             return NoContent();
         }
@@ -69,15 +69,13 @@ namespace apifinansys.Controllers
 
         // DELETE: api/Category/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(long id)
+        public IActionResult DeleteCategory(long id)
         {
-            var category = await _context.Categories.FindAsync(id);
-
+            var category = _repoWrapper.CategoryRepository.FindByCondition(c => c.Id == id).FirstOrDefault();
             if (category == null)
                 return NotFound();
 
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
+            _repoWrapper.CategoryRepository.Delete(category);
 
             return NoContent();
         }

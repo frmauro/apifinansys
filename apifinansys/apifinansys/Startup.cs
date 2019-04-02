@@ -1,4 +1,5 @@
 ﻿using apifinansys.EFContext;
+using apifinansys.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,8 @@ namespace apifinansys
 
             services.AddDbContext<FinansysContext>(opt =>
                         opt.UseSqlServer(Configuration.GetConnectionString("FinansysContext")));
+
+            services.ConfigureRepositoryWrapper();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
