@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using apifinansys.Contracts;
 using apifinansys.EFContext;
 using apifinansys.entities;
 using Microsoft.AspNetCore.Http;
@@ -14,26 +15,26 @@ namespace apifinansys.Controllers
     [ApiController]
     public class EntryController : ControllerBase
     {
-        private readonly FinansysContext _context;
+        private IRepositoryWrapper _repoWrapper;
 
-        public EntryController(FinansysContext context)
+        public EntryController(IRepositoryWrapper repoWrapper)
         {
-            this._context = context;
+            this._repoWrapper = repoWrapper;
         }
 
         // GET: api/Entry
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Entry>>> GetEntries()
+        public  ActionResult<IEnumerable<Entry>> GetEntries()
         {
-            return await _context.Entries.ToListAsync();
+            return _repoWrapper.EntryRepository.FindAll().ToList();
         }
 
 
         // GET: api/Entry/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Entry>> GetEntry(long id)
+        public ActionResult<Entry> GetEntry(long id)
         {
-            var entry = await _context.Entries.FindAsync(id);
+            var entry = _repoWrapper.EntryRepository.FindByCondition(e => e.Id == id).FirstOrDefault();
 
             if (entry == null)
                 return NotFound();
@@ -44,24 +45,21 @@ namespace apifinansys.Controllers
 
         // POST: api/Entry
         [HttpPost]
-        public async Task<ActionResult<Entry>> PostCategory(Entry entry)
+        public ActionResult<Entry> PostCategory(Entry entry)
         {
-            _context.Entries.Add(entry);
-            await _context.SaveChangesAsync();
-
+            _repoWrapper.EntryRepository.Create(entry);
             return CreatedAtAction(nameof(GetEntry), new { id = entry.Id }, entry);
         }
 
 
         // PUT: api/Entry/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(long id, Entry entry)
+        public IActionResult PutCategory(long id, Entry entry)
         {
             if (id != entry.Id)
                 return BadRequest();
 
-            _context.Entry(entry).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+            _repoWrapper.EntryRepository.Update(entry);
 
             return NoContent();
         }
@@ -69,15 +67,14 @@ namespace apifinansys.Controllers
 
         // DELETE: api/Entry/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEntry(long id)
+        public IActionResult DeleteEntry(long id)
         {
-            var entry = await _context.Entries.FindAsync(id);
+            var entry = _repoWrapper.EntryRepository.FindByCondition(e => e.Id == id).FirstOrDefault();
 
             if (entry == null)
                 return NotFound();
 
-            _context.Entries.Remove(entry);
-            await _context.SaveChangesAsync();
+            _repoWrapper.EntryRepository.Delete(entry);
 
             return NoContent();
         }

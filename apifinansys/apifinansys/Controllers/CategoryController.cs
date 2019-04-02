@@ -17,8 +17,6 @@ namespace apifinansys.Controllers
     {
         private IRepositoryWrapper _repoWrapper;
 
-        //private readonly FinansysContext _context;
-
         public CategoryController(IRepositoryWrapper repoWrapper)
         {
             this._repoWrapper = repoWrapper;
