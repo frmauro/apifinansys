@@ -63,5 +63,22 @@ namespace apifinansys.Repository
         {
             await this.FinansysContext.SaveChangesAsync();
         }
+
+        public async Task CreateAsync(T entity)
+        {
+            await this.FinansysContext.Set<T>().AddAsync(entity);
+        }
+
+        public async Task UpdateAsync(T entity)
+        {
+            this.FinansysContext.Set<T>().Update(entity);
+            await SaveAsync();
+        }
+
+        public async Task DeleteAsync(T entity)
+        {
+            Delete(entity);
+            await SaveAsync();
+        }
     }
 }

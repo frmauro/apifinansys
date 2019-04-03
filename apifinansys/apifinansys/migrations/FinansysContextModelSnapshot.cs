@@ -35,7 +35,7 @@ namespace apifinansys.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("apifinansys.entities.Entry", b =>
@@ -60,7 +60,7 @@ namespace apifinansys.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Entries");
+                    b.ToTable("Entry");
                 });
 
             modelBuilder.Entity("apifinansys.entities.Entry", b =>

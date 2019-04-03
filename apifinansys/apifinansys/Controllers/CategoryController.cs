@@ -24,42 +24,44 @@ namespace apifinansys.Controllers
 
         // GET: api/Category
         [HttpGet]
-        public ActionResult<IEnumerable<Category>> GetCategories()
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategories()
         {
-            return _repoWrapper.CategoryRepository.FindAll().ToList();
+            var categories = await _repoWrapper.CategoryRepository.FindAllAsync();
+            return Ok(categories);
         }
 
 
         // GET: api/Category/5
         [HttpGet("{id}")]
-        public ActionResult<Category> GetCategory(long id)
+        public async Task<ActionResult<Category>> GetCategory(long id)
         {
-            var category = _repoWrapper.CategoryRepository.FindByCondition(c => c.Id == id).FirstOrDefault();
+            var categories = await _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == id);
+            var category = categories.FirstOrDefault();
 
             if (category == null)
                 return NotFound();
 
-            return category;
+            return Ok(category);
         }
 
 
         // POST: api/Category
         [HttpPost]
-        public ActionResult<Category> PostCategory(Category category)
+        public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            _repoWrapper.CategoryRepository.Create(category);
+            await _repoWrapper.CategoryRepository.CreateAsync(category);
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
         }
 
 
         // PUT: api/Category/5
         [HttpPut("{id}")]
-        public IActionResult PutCategory(long id, Category category)
+        public async Task<IActionResult> PutCategory(long id, Category category)
         {
             if (id != category.Id)
                 return BadRequest();
 
-            _repoWrapper.CategoryRepository.Update(category);
+            await _repoWrapper.CategoryRepository.UpdateAsync(category);
 
             return NoContent();
         }
@@ -67,14 +69,15 @@ namespace apifinansys.Controllers
 
         // DELETE: api/Category/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteCategory(long id)
+        public async Task<IActionResult> DeleteCategory(long id)
         {
-            var category = _repoWrapper.CategoryRepository.FindByCondition(c => c.Id == id).FirstOrDefault();
+            var categories = await _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == id);
+            var category = categories.FirstOrDefault();
+
             if (category == null)
                 return NotFound();
 
-            _repoWrapper.CategoryRepository.Delete(category);
-
+            await _repoWrapper.CategoryRepository.DeleteAsync(category);
             return NoContent();
         }
     }

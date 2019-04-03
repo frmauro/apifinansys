@@ -9,7 +9,7 @@ namespace apifinansys.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "Category",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -21,11 +21,11 @@ namespace apifinansys.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_Category", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Entries",
+                name: "Entry",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -39,28 +39,28 @@ namespace apifinansys.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Entries", x => x.Id);
+                    table.PrimaryKey("PK_Entry", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Entries_Categories_CategoryId",
+                        name: "FK_Entry_Category_CategoryId",
                         column: x => x.CategoryId,
-                        principalTable: "Categories",
+                        principalTable: "Category",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Entries_CategoryId",
-                table: "Entries",
+                name: "IX_Entry_CategoryId",
+                table: "Entry",
                 column: "CategoryId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Entries");
+                name: "Entry");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Category");
         }
     }
 }

@@ -21,14 +21,19 @@ namespace apifinansys.EFContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Entry>().ToTable("Entry");
-            modelBuilder.Entity<Category>().ToTable("Category");
-            ////This will singularize all table names
-            //foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
-            //{
-            //    entityType.Relational().TableName = entityType.DisplayName();
-            //}
+            modelBuilder.RemovePluralizingTableNameConvention();
         }
 
+    }
+
+    public static class ModelBuilderExtensions
+    {
+        public static void RemovePluralizingTableNameConvention(this ModelBuilder modelBuilder)
+        {
+            foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
+            {
+                entity.Relational().TableName = entity.DisplayName();
+            }
+        }
     }
 }

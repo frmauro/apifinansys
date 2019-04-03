@@ -24,42 +24,44 @@ namespace apifinansys.Controllers
 
         // GET: api/Entry
         [HttpGet]
-        public  ActionResult<IEnumerable<Entry>> GetEntries()
+        public async Task<ActionResult<IEnumerable<Entry>>> GetEntries()
         {
-            return _repoWrapper.EntryRepository.FindAll().ToList();
+            var entries = await _repoWrapper.EntryRepository.FindAllAsync();
+            return Ok(entries);
         }
 
 
         // GET: api/Entry/5
         [HttpGet("{id}")]
-        public ActionResult<Entry> GetEntry(long id)
+        public async Task<ActionResult<Entry>> GetEntry(long id)
         {
-            var entry = _repoWrapper.EntryRepository.FindByCondition(e => e.Id == id).FirstOrDefault();
+            var entries = await _repoWrapper.EntryRepository.FindByConditionAsync(e => e.Id == id);
+            var entry = entries.FirstOrDefault();
 
             if (entry == null)
                 return NotFound();
 
-            return entry;
+            return Ok(entry);
         }
 
 
         // POST: api/Entry
         [HttpPost]
-        public ActionResult<Entry> PostCategory(Entry entry)
+        public async Task<ActionResult<Entry>> PostCategory(Entry entry)
         {
-            _repoWrapper.EntryRepository.Create(entry);
+            await _repoWrapper.EntryRepository.CreateAsync(entry);
             return CreatedAtAction(nameof(GetEntry), new { id = entry.Id }, entry);
         }
 
 
         // PUT: api/Entry/5
         [HttpPut("{id}")]
-        public IActionResult PutCategory(long id, Entry entry)
+        public async Task<IActionResult> PutCategory(long id, Entry entry)
         {
             if (id != entry.Id)
                 return BadRequest();
 
-            _repoWrapper.EntryRepository.Update(entry);
+            await _repoWrapper.EntryRepository.UpdateAsync(entry);
 
             return NoContent();
         }
@@ -67,14 +69,15 @@ namespace apifinansys.Controllers
 
         // DELETE: api/Entry/5
         [HttpDelete("{id}")]
-        public IActionResult DeleteEntry(long id)
+        public async Task<IActionResult> DeleteEntry(long id)
         {
-            var entry = _repoWrapper.EntryRepository.FindByCondition(e => e.Id == id).FirstOrDefault();
+            var entries = await _repoWrapper.EntryRepository.FindByConditionAsync(e => e.Id == id);
+            var entry = entries.FirstOrDefault();
 
             if (entry == null)
                 return NotFound();
 
-            _repoWrapper.EntryRepository.Delete(entry);
+            await _repoWrapper.EntryRepository.DeleteAsync(entry);
 
             return NoContent();
         }
