@@ -7,6 +7,11 @@ namespace apifinansys.entities
 {
     public class Category : EntityBase
     {
+        public Category()
+        {
+            this.DataCriacao = DateTime.Now;
+            this.Ativo = true;
+        }
         public virtual string Name { get; set; }
         public virtual string Description { get; set; }
     }

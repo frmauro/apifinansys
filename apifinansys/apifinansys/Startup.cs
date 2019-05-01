@@ -25,11 +25,8 @@ namespace apifinansys
             //services.AddDbContext<FinansysContext>
             //    (options => options.UseSqlServer(connection));
 
-            services.AddDbContext<FinansysContext>(opt =>
-                        opt.UseSqlServer(Configuration.GetConnectionString("FinansysContext")));
-
+            services.AddDbContext<FinansysContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("FinansysContext")));
             services.ConfigureRepositoryWrapper();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
