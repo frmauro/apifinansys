@@ -67,6 +67,7 @@ namespace apifinansys.Repository
         public async Task CreateAsync(T entity)
         {
             await this.FinansysContext.Set<T>().AddAsync(entity);
+            await SaveAsync();
         }
 
         public async Task UpdateAsync(T entity)
