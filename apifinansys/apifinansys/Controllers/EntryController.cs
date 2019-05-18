@@ -27,6 +27,12 @@ namespace apifinansys.Controllers
         public async Task<ActionResult<IEnumerable<Entry>>> GetEntries()
         {
             var entries = await _repoWrapper.EntryRepository.FindAllAsync();
+
+            entries.ToList().ForEach(e => {
+                var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == e.Id);
+                e.Category = categories.Result.FirstOrDefault();
+            });
+
             return Ok(entries);
         }
 
@@ -47,8 +53,12 @@ namespace apifinansys.Controllers
 
         // POST: api/Entry
         [HttpPost]
-        public async Task<ActionResult<Entry>> PostCategory(Entry entry)
+        public async Task<ActionResult<Entry>> PostEntry(Entry entry)
         {
+            entry.DataCriacao = DateTime.Now;
+            entry.Ativo = true;
+            var categories = await _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == entry.Category.Id);
+            entry.Category = categories.FirstOrDefault();
             await _repoWrapper.EntryRepository.CreateAsync(entry);
             return CreatedAtAction(nameof(GetEntry), new { id = entry.Id }, entry);
         }
@@ -56,7 +66,7 @@ namespace apifinansys.Controllers
 
         // PUT: api/Entry/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(long id, Entry entry)
+        public async Task<IActionResult> PutEntry(long id, Entry entry)
         {
             if (id != entry.Id)
                 return BadRequest();

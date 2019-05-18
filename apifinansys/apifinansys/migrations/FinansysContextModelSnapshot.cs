@@ -66,7 +66,7 @@ namespace apifinansys.Migrations
             modelBuilder.Entity("apifinansys.entities.Entry", b =>
                 {
                     b.HasOne("apifinansys.entities.Category", "Category")
-                        .WithMany()
+                        .WithMany("Entries")
                         .HasForeignKey("CategoryId");
                 });
 #pragma warning restore 612, 618

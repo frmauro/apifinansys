@@ -7,9 +7,11 @@ namespace apifinansys.entities
 {
     public class Entry : EntityBase
     {
-        public virtual string Name { get; set; }
-        public virtual bool Paid { get; set; }
-        public virtual decimal Amount { get; set; }
-        public virtual Category Category { get; set; }
+        public string Name { get; set; }
+        public bool Paid { get; set; }
+        public decimal Amount { get; set; }
+
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 }

@@ -10,7 +10,7 @@ using apifinansys.EFContext;
 namespace apifinansys.Migrations
 {
     [DbContext(typeof(FinansysContext))]
-    [Migration("20190403002035_InitialCreate")]
+    [Migration("20190518120930_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -68,7 +68,7 @@ namespace apifinansys.Migrations
             modelBuilder.Entity("apifinansys.entities.Entry", b =>
                 {
                     b.HasOne("apifinansys.entities.Category", "Category")
-                        .WithMany()
+                        .WithMany("Entries")
                         .HasForeignKey("CategoryId");
                 });
 #pragma warning restore 612, 618

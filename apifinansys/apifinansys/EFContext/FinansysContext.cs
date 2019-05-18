@@ -21,6 +21,8 @@ namespace apifinansys.EFContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Entry>().HasOne(c => c.Category).WithMany(c => c.Entries);
+            modelBuilder.Entity<Category>().HasMany(c => c.Entries).WithOne(c => c.Category);
             modelBuilder.RemovePluralizingTableNameConvention();
         }
 
