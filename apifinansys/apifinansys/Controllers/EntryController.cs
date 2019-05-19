@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using apifinansys.Contracts;
+using apifinansys.DTO;
 using apifinansys.EFContext;
 using apifinansys.entities;
 using Microsoft.AspNetCore.Http;
@@ -28,12 +29,27 @@ namespace apifinansys.Controllers
         {
             var entries = await _repoWrapper.EntryRepository.FindAllAsync();
 
-            entries.ToList().ForEach(e => {
+            var entriesDto = new List<EntryDto>();
+
+            entries.ToList().ForEach(e =>
+            {
+                var entryDto = new EntryDto();
+                entryDto.Id = e.Id;
+                entryDto.Amount = e.Amount;
+                entryDto.Category = new CategoryDto();
+                entryDto.Name = e.Name;
+                entryDto.Paid = e.Paid;
+                entriesDto.Add(entryDto);
+
                 var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == e.Id);
-                e.Category = categories.Result.FirstOrDefault();
+                var category = categories.Result.FirstOrDefault();
+                entryDto.Category.Id = category.Id;
+                entryDto.Category.Name = category.Name;
+                entryDto.Category.Description = category.Description;
+
             });
 
-            return Ok(entries);
+            return Ok(entriesDto);
         }
 
 
