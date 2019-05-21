@@ -35,7 +35,10 @@ namespace apifinansys.Migrations
                     Name = table.Column<string>(nullable: true),
                     Paid = table.Column<bool>(nullable: false),
                     Amount = table.Column<decimal>(nullable: false),
-                    CategoryId = table.Column<int>(nullable: true)
+                    Description = table.Column<string>(nullable: true),
+                    Type = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    CategoryId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -45,7 +48,7 @@ namespace apifinansys.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Category",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

@@ -11,7 +11,10 @@ namespace apifinansys.DTO
         public string Name { get; set; }
         public bool Paid { get; set; }
         public decimal Amount { get; set; }
+        public string Description { get; set; }
+        public string Type { get; set; }
+        public string Date { get; set; }
 
-        public CategoryDto Category { get; set; }
+        public int CategoryId { get; set; }
     }
 }

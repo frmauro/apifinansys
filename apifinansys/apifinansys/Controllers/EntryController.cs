@@ -33,19 +33,21 @@ namespace apifinansys.Controllers
 
             entries.ToList().ForEach(e =>
             {
-                var entryDto = new EntryDto();
-                entryDto.Id = e.Id;
-                entryDto.Amount = e.Amount;
-                entryDto.Category = new CategoryDto();
-                entryDto.Name = e.Name;
-                entryDto.Paid = e.Paid;
+                var entryDto = new EntryDto
+                {
+                    Id = e.Id,
+                    Amount = e.Amount,
+                    Name = e.Name,
+                    Paid = e.Paid,
+                    Description = e.Description,
+                    Date = e.Date.ToShortDateString(),
+                    Type = e.Type
+                };
                 entriesDto.Add(entryDto);
 
                 var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == e.Id);
                 var category = categories.Result.FirstOrDefault();
-                entryDto.Category.Id = category.Id;
-                entryDto.Category.Name = category.Name;
-                entryDto.Category.Description = category.Description;
+                entryDto.CategoryId = category.Id;
 
             });
 
@@ -55,7 +57,7 @@ namespace apifinansys.Controllers
 
         // GET: api/Entry/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Entry>> GetEntry(long id)
+        public async Task<ActionResult<EntryDto>> GetEntry(long id)
         {
             var entries = await _repoWrapper.EntryRepository.FindByConditionAsync(e => e.Id == id);
             var entry = entries.FirstOrDefault();
@@ -63,20 +65,45 @@ namespace apifinansys.Controllers
             if (entry == null)
                 return NotFound();
 
-            return Ok(entry);
+            var entryDto = new EntryDto
+            {
+                Id = entry.Id,
+                Amount = entry.Amount,
+                Name = entry.Name,
+                Paid = entry.Paid,
+                Description = entry.Description,
+                Date = entry.Date.ToShortDateString(),
+                Type = entry.Type
+            };
+
+            var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == entry.Id);
+            var category = categories.Result.FirstOrDefault();
+            entryDto.CategoryId = category.Id;
+
+            return Ok(entryDto);
         }
 
 
         // POST: api/Entry
         [HttpPost]
-        public async Task<ActionResult<Entry>> PostEntry(Entry entry)
+        public async Task<ActionResult<Entry>> PostEntry(EntryDto entryDto)
         {
-            entry.DataCriacao = DateTime.Now;
-            entry.Ativo = true;
-            var categories = await _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == entry.Category.Id);
+            var entry = new Entry
+            {
+                DataCriacao = DateTime.Now,
+                Ativo = true,
+                Name = entryDto.Name,
+                Paid = entryDto.Paid,
+                Type = entryDto.Type,
+                Amount = entryDto.Amount,
+                Description = entryDto.Description
+            };
+            entry.Date = entry.Date;
+
+            var categories = await _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == entryDto.CategoryId);
             entry.Category = categories.FirstOrDefault();
             await _repoWrapper.EntryRepository.CreateAsync(entry);
-            return CreatedAtAction(nameof(GetEntry), new { id = entry.Id }, entry);
+            return CreatedAtAction(nameof(GetEntry), new { id = entry.Id }, entryDto);
         }
 
 

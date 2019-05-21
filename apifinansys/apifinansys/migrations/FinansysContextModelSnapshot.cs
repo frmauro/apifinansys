@@ -48,13 +48,19 @@ namespace apifinansys.Migrations
 
                     b.Property<bool>("Ativo");
 
-                    b.Property<int?>("CategoryId");
+                    b.Property<int>("CategoryId");
 
                     b.Property<DateTime>("DataCriacao");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Description");
 
                     b.Property<string>("Name");
 
                     b.Property<bool>("Paid");
+
+                    b.Property<string>("Type");
 
                     b.HasKey("Id");
 
@@ -67,7 +73,8 @@ namespace apifinansys.Migrations
                 {
                     b.HasOne("apifinansys.entities.Category", "Category")
                         .WithMany("Entries")
-                        .HasForeignKey("CategoryId");
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }
