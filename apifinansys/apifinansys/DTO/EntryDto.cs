@@ -16,5 +16,6 @@ namespace apifinansys.DTO
         public string Date { get; set; }
 
         public int CategoryId { get; set; }
+        public string CategoryName { get; set; }
     }
 }

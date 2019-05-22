@@ -25,7 +25,7 @@ namespace apifinansys.Controllers
 
         // GET: api/Entry
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Entry>>> GetEntries()
+        public async Task<ActionResult<IEnumerable<EntryDto>>> GetEntries()
         {
             var entries = await _repoWrapper.EntryRepository.FindAllAsync();
 
@@ -43,12 +43,13 @@ namespace apifinansys.Controllers
                     Date = e.Date.ToShortDateString(),
                     Type = e.Type
                 };
-                entriesDto.Add(entryDto);
 
                 var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == e.Id);
                 var category = categories.Result.FirstOrDefault();
                 entryDto.CategoryId = category.Id;
+                entryDto.CategoryName = category.Name;
 
+                entriesDto.Add(entryDto);
             });
 
             return Ok(entriesDto);
@@ -79,6 +80,7 @@ namespace apifinansys.Controllers
             var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == entry.Id);
             var category = categories.Result.FirstOrDefault();
             entryDto.CategoryId = category.Id;
+            entryDto.CategoryName = category.Name;
 
             return Ok(entryDto);
         }
