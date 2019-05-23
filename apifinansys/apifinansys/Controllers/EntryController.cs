@@ -36,7 +36,7 @@ namespace apifinansys.Controllers
                 var entryDto = new EntryDto
                 {
                     Id = e.Id,
-                    Amount = e.Amount,
+                    Amount = e.Amount.ToString(),
                     Name = e.Name,
                     Paid = e.Paid,
                     Description = e.Description,
@@ -44,7 +44,7 @@ namespace apifinansys.Controllers
                     Type = e.Type
                 };
 
-                var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == e.Id);
+                var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == e.CategoryId);
                 var category = categories.Result.FirstOrDefault();
                 entryDto.CategoryId = category.Id;
                 entryDto.CategoryName = category.Name;
@@ -69,15 +69,16 @@ namespace apifinansys.Controllers
             var entryDto = new EntryDto
             {
                 Id = entry.Id,
-                Amount = entry.Amount,
+                Amount = entry.Amount.ToString(),
                 Name = entry.Name,
                 Paid = entry.Paid,
                 Description = entry.Description,
                 Date = entry.Date.ToShortDateString(),
+                
                 Type = entry.Type
             };
 
-            var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == entry.Id);
+            var categories = _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == entry.CategoryId);
             var category = categories.Result.FirstOrDefault();
             entryDto.CategoryId = category.Id;
             entryDto.CategoryName = category.Name;
@@ -97,27 +98,37 @@ namespace apifinansys.Controllers
                 Name = entryDto.Name,
                 Paid = entryDto.Paid,
                 Type = entryDto.Type,
-                Amount = entryDto.Amount,
+                Amount = Convert.ToDecimal(entryDto.Amount),
                 Description = entryDto.Description
             };
-            entry.Date = entry.Date;
+            entry.Date = Convert.ToDateTime(entryDto.Date);
 
             var categories = await _repoWrapper.CategoryRepository.FindByConditionAsync(c => c.Id == entryDto.CategoryId);
             entry.Category = categories.FirstOrDefault();
             await _repoWrapper.EntryRepository.CreateAsync(entry);
+            entryDto.Id = entry.Id;
             return CreatedAtAction(nameof(GetEntry), new { id = entry.Id }, entryDto);
         }
 
 
         // PUT: api/Entry/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEntry(long id, Entry entry)
+        public async Task<IActionResult> PutEntry(long id, EntryDto entryDto)
         {
-            if (id != entry.Id)
+            if (id != entryDto.Id)
                 return BadRequest();
 
-            await _repoWrapper.EntryRepository.UpdateAsync(entry);
+            var entries = await _repoWrapper.EntryRepository.FindByConditionAsync(e => e.Id == id);
+            var entry = entries.FirstOrDefault();
 
+            entry.Name = entryDto.Name;
+            entry.Paid = entryDto.Paid;
+            entry.Type = entryDto.Type;
+            entry.Amount = Convert.ToDecimal(entryDto.Amount);
+            entry.Description = entryDto.Description;
+            entry.Date = Convert.ToDateTime(entryDto.Date);
+
+            await _repoWrapper.EntryRepository.UpdateAsync(entry);
             return NoContent();
         }
 
