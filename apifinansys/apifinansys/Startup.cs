@@ -2,10 +2,13 @@
 using apifinansys.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace apifinansys
 {
@@ -32,7 +35,7 @@ namespace apifinansys
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200");
+                    builder.WithOrigins("http://localhost:4200", "http://192.168.99.100:3000");
                     builder.AllowAnyMethod()
                            .AllowAnyHeader();
                 });
@@ -56,9 +59,18 @@ namespace apifinansys
                 app.UseHsts();
             }
 
-            app.UseCors(MyAllowSpecificOrigins);
 
+            //Fixar Cultura para en-US
+            var localizationOptions = new RequestLocalizationOptions
+            {
+                SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR") },
+                SupportedUICultures = new List<CultureInfo> { new CultureInfo("pt-BR") },
+                DefaultRequestCulture = new RequestCulture("pt-BR")
+            };
+
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
+            app.UseRequestLocalization(localizationOptions);
             app.UseMvc();
         }
     }
