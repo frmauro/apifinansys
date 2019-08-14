@@ -1,5 +1,6 @@
 ﻿using apifinansys.EFContext;
 using apifinansys.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
@@ -7,8 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace apifinansys
 {
@@ -43,6 +47,43 @@ namespace apifinansys
 
             services.AddDbContext<FinansysContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("FinansysContext")));
             services.ConfigureRepositoryWrapper();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt =>
+                {
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = ctx =>
+                        {
+                            // Access ctx.Request here for the query-string, route, etc.
+                            //ctx.Token = "";
+
+                            //var unencryptedToken = ctx.Request.Headers;
+                            //var encryptedToken = Decrypt(unencryptedToken);
+                            //ctx.Token = encryptedToken;
+
+                            return Task.CompletedTask;
+                        }
+                    };
+
+                    //opt.Events.MessageReceived = context =>
+                    //{
+                    //    var unencryptedToken = context.Token;
+                    //    var encryptedToken = Decrypt(unencryptedToken);
+                    //    context.Token = encryptedToken;
+                    //};
+
+                    opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+                    };
+
+
+                });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -71,6 +112,9 @@ namespace apifinansys
             app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
             app.UseRequestLocalization(localizationOptions);
+
+            app.UseAuthentication();
+
             app.UseMvc();
         }
     }
