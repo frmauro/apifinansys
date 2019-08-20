@@ -1,5 +1,6 @@
 ﻿using apifinansys.EFContext;
 using apifinansys.Extensions;
+using apifinansys.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +31,9 @@ namespace apifinansys
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddScoped<IHeaderEvent, HeaderEvent>();
+
             //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;ConnectRetryCount=0";
             //services.AddDbContext<FinansysContext>
             //    (options => options.UseSqlServer(connection));
@@ -48,41 +52,41 @@ namespace apifinansys
             services.AddDbContext<FinansysContext>(opt => opt.UseSqlServer(Configuration.GetConnectionString("FinansysContext")));
             services.ConfigureRepositoryWrapper();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt =>
-                {
-                    opt.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = ctx =>
-                        {
-                            // Access ctx.Request here for the query-string, route, etc.
-                            //ctx.Token = "";
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //    .AddJwtBearer(opt =>
+            //    {
+            //        opt.Events = new JwtBearerEvents
+            //        {
+            //            OnMessageReceived = ctx =>
+            //            {
+            //                // Access ctx.Request here for the query-string, route, etc.
+            //                //ctx.Token = "";
 
-                            //var unencryptedToken = ctx.Request.Headers;
-                            //var encryptedToken = Decrypt(unencryptedToken);
-                            //ctx.Token = encryptedToken;
+            //                //var unencryptedToken = ctx.Request.Headers;
+            //                //var encryptedToken = Decrypt(unencryptedToken);
+            //                //ctx.Token = encryptedToken;
 
-                            return Task.CompletedTask;
-                        }
-                    };
+            //                return Task.CompletedTask;
+            //            }
+            //        };
 
-                    //opt.Events.MessageReceived = context =>
-                    //{
-                    //    var unencryptedToken = context.Token;
-                    //    var encryptedToken = Decrypt(unencryptedToken);
-                    //    context.Token = encryptedToken;
-                    //};
+            //opt.Events.MessageReceived = context =>
+            //{
+            //    var unencryptedToken = context.Token;
+            //    var encryptedToken = Decrypt(unencryptedToken);
+            //    context.Token = encryptedToken;
+            //};
 
-                    opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
-                    };
+            //opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            //{
+            //    ValidateIssuer = true,
+            //    ValidateAudience = true,
+            //    ValidateIssuerSigningKey = true,
+            //    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"]))
+            //};
 
 
-                });
+            //});
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -113,9 +117,11 @@ namespace apifinansys
             app.UseHttpsRedirection();
             app.UseRequestLocalization(localizationOptions);
 
+            app.UseStoreUserData();
             app.UseAuthentication();
 
             app.UseMvc();
+
         }
     }
 }
